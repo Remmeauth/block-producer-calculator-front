@@ -1,6 +1,7 @@
 Block producer investments payback calculator front-end.
 
   * [Development](#development)
+  * [Production](#production)
 
 ## Development
 
@@ -40,3 +41,19 @@ Clean all images with the following command:
 
 ```bash
 $ docker rmi $(docker images -q) -f
+```
+
+## Production
+
+To build the project, use the following command:
+
+```bash
+$ docker build -t block-producer-calculator-front . -f Dockerfile.production
+```
+
+To run the project, use the following command. It will start the server and occupate current terminal session:
+
+```bash
+$ docker run -p 8080:8080 -e PORT=8080 \
+      --name block-producer-calculator-front block-producer-calculator-front
+```
