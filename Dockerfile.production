@@ -3,7 +3,7 @@ FROM node:8.15.0 AS production-codebase
 WORKDIR /block-producer-calculator-front
 COPY . /block-producer-calculator-front
 
-RUN npm run build
+RUN npm install && npm run build
 
 FROM nginx:1.15.8
 
