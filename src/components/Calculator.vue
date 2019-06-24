@@ -4,6 +4,11 @@
             <v-flex xs8 offset-xs2>
                 <v-container grid-list-xl text-xs-center>
                     <form>
+                        <v-switch 
+                            v-model="switch1" 
+                            :label="`I plan to run for the top 21`"
+                            color="#533971"
+                        ></v-switch>
                         <v-layout row wrap justify-center>
                             <v-flex xs12>
                                 <h2>Blockchain parameters</h2>
@@ -42,7 +47,7 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs6>
-                                <v-text-field
+                                <v-text-field v-if="switch1"
                                     v-model="economyActiveBlockProducersVotes"
                                     :error-messages="economyActiveBlockProducersVotesErrors"
                                     label="Amount of votes other active block producers (TOP 21) have"
@@ -67,7 +72,7 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs6>
-                                <v-text-field
+                                <v-text-field v-if="switch1"
                                     v-model="blockProducerVotes"
                                     :error-messages="blockProducerVotesErrors"
                                     label="Votes number"
@@ -76,8 +81,8 @@
                                     @blur="$v.blockProducerVotes.$touch()"
                                     placeholder="1000000"
                                 ></v-text-field>
-                                <br>
                             </v-flex>
+                            <br>
                             <v-flex xs6>
                                 <v-btn @click="calculateInvestmentsPayback">Calculate</v-btn>  
                             </v-flex>
@@ -128,6 +133,7 @@ export default {
             economyActiveBlockProducersVotes: null,
             blockProducerStake: null,
             blockProducerVotes: null,
+            switch1: false,
         }
     },
     computed: {
