@@ -5,7 +5,7 @@
                 <v-container grid-list-xl text-xs-center>
                     <form>
                         <v-switch 
-                            v-model="switch1" 
+                            v-model="switchForTop21" 
                             :label="`I plan to run for the top 21`"
                             color="#533971"
                         ></v-switch>
@@ -37,24 +37,23 @@
                             </v-flex>
                             <v-flex xs6>
                                 <v-text-field
-                                    v-model="economyActiveBlockProducersStakes"
-                                    :error-messages="economyActiveBlockProducersStakesErrors"
+                                    v-model="economyAllBlockProducersStakes"
+                                    :error-messages="economyAllBlockProducersStakesErrors"
                                     label="Amount of REM staked by other block producers"
                                     required
-                                    @input="$v.economyActiveBlockProducersStakes.$touch()"
-                                    @blur="$v.economyActiveBlockProducersStakes.$touch()"
-                                    placeholder="300000000"
+                                    @input="$v.economyAllBlockProducersStakes.$touch()"
+                                    @blur="$v.economyAllBlockProducersStakes.$touch()"
+                                    placeholder="350000000"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs6>
-                                <v-text-field v-if="switch1"
+                                <v-text-field v-if="switchForTop21"
                                     v-model="economyActiveBlockProducersVotes"
                                     :error-messages="economyActiveBlockProducersVotesErrors"
                                     label="Amount of votes other active block producers (TOP 21) have"
-                                    required
                                     @input="$v.economyActiveBlockProducersVotes.$touch()"
                                     @blur="$v.economyActiveBlockProducersVotes.$touch()"
-                                    placeholder="10000000"
+                                    placeholder="300000000"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs12>
@@ -72,34 +71,34 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs6>
-                                <v-text-field v-if="switch1"
+                                <v-text-field v-if="switchForTop21"
                                     v-model="blockProducerVotes"
                                     :error-messages="blockProducerVotesErrors"
                                     label="Votes number"
-                                    required
                                     @input="$v.blockProducerVotes.$touch()"
                                     @blur="$v.blockProducerVotes.$touch()"
-                                    placeholder="1000000"
+                                    placeholder="300000"
                                 ></v-text-field>
                             </v-flex>
-                            <br>
+                            <v-flex xs12>
+                                <h2>Investment payback calculation</h2>
+                            </v-flex>
                             <v-flex xs6>
                                 <v-btn @click="calculateInvestmentsPayback">Calculate</v-btn>  
+                            </v-flex>
+                            <v-flex xs6>
+                                <v-text-field
+                                    v-model="caclulationResult"
+                                    label="Expected payback in tokens per month"
+                                    placeholder="0"
+                                    readonly
+                                ></v-text-field> 
                             </v-flex>
                         </v-layout>                                                               
                     </form>
                 </v-container>
             </v-flex>
         </v-layout>
-        
-        <div id="caclulationResultForm">
-            <section v-if="isGenericRequestError">
-                <p>We're sorry, we're not able to retrieve this information at the moment, please try back later.</p>
-            </section>
-            <section v-else>
-                <p>{{ caclulationResult }}</p>
-            </section>
-        </div>
     </v-container>
 </template>
 
@@ -109,6 +108,7 @@ import Vue from 'vue'
 
 import { validationMixin, Vuelidate } from 'vuelidate'
 import { required, integer, decimal } from 'vuelidate/lib/validators'
+import { constants } from 'crypto';
 
 Vue.use(Vuelidate)
 
@@ -118,7 +118,7 @@ export default {
     validations: {
         economyMoneyPerMonth: { required, integer },
         economyTokenPrice: { required, decimal },
-        economyActiveBlockProducersStakes: { required, integer },
+        economyAllBlockProducersStakes: { required, integer },
         economyActiveBlockProducersVotes: { required, integer },
         blockProducerStake: { required, integer },
         blockProducerVotes: { required, integer },
@@ -129,11 +129,11 @@ export default {
             isGenericRequestError: false,
             economyMoneyPerMonth: null,
             economyTokenPrice: null,
-            economyActiveBlockProducersStakes: null,
+            economyAllBlockProducersStakes: null,
             economyActiveBlockProducersVotes: null,
             blockProducerStake: null,
             blockProducerVotes: null,
-            switch1: false,
+            switchForTop21: false,
         }
     },
     computed: {
@@ -151,11 +151,11 @@ export default {
             !this.$v.economyTokenPrice.decimal && errors.push('This field should be a decimal.')
             return errors
         },
-        economyActiveBlockProducersStakesErrors () {
+        economyAllBlockProducersStakesErrors () {
             const errors = []
-            if (!this.$v.economyActiveBlockProducersStakes.$dirty) return errors
-            !this.$v.economyActiveBlockProducersStakes.required && errors.push('This field is required.')
-            !this.$v.economyActiveBlockProducersStakes.integer && errors.push('This field should be an integer.')
+            if (!this.$v.economyAllBlockProducersStakes.$dirty) return errors
+            !this.$v.economyAllBlockProducersStakes.required && errors.push('This field is required.')
+            !this.$v.economyAllBlockProducersStakes.integer && errors.push('This field should be an integer.')
             return errors
         },   
         economyActiveBlockProducersVotesErrors () {
@@ -184,12 +184,19 @@ export default {
         calculateInvestmentsPayback: function () {
             this.$v.$touch()
 
+            if (this.switchForTop21 === false) {
+                // If user's block producer has zero votes, it does not matter how much
+                // votes other activate block producers (top 21) have, so any random integer
+                if (!this.economyActiveBlockProducersVotes) {this.economyActiveBlockProducersVotes = 1}
+                if (!this.blockProducerVotes) {this.blockProducerVotes = 0}
+            }
+
             axios
                 .post('https://bpc-back-production.herokuapp.com/investments-payback/month', {
                     economy: {
                         money_per_month: this.economyMoneyPerMonth,
                         token_price: this.economyTokenPrice,
-                        active_block_producers_stakes: this.economyActiveBlockProducersStakes,
+                        all_block_producers_stakes: this.economyAllBlockProducersStakes,
                         active_block_producers_votes: this.economyActiveBlockProducersVotes
                     },
                     block_producer: {
@@ -201,8 +208,13 @@ export default {
                     response => (this.caclulationResult = response.data.payback)
                 )
                 .catch(error => {
-                    this.isGenericRequestError = true
+                    this.caclulationResult = `We're sorry, we're not able to retrieve this info.`
                 })
+
+            if (this.switchForTop21 === false) {
+                this.economyActiveBlockProducersVotes = null
+                this.blockProducerVotes = null
+            }
         }
     }
 }
