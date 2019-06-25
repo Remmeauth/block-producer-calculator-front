@@ -179,7 +179,12 @@ export default {
             !this.$v.blockProducerVotes.integer && errors.push('This field should be an integer.')
             return errors
         },                 
-      },
+    },
+    mounted() {
+        axios
+            .get('https://bpc-back-production.herokuapp.com/token/price/usd')
+            .then(response => (this.economyTokenPrice = response.data.price))
+    },
     methods: {
         calculateInvestmentsPayback: function () {
             this.$v.$touch()
