@@ -85,7 +85,7 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs12>
-                                <h2>Investment payback calculation</h2>
+                                <h2>Expected reward calculation</h2>
                             </v-flex>
                             <v-flex xs6>
                                 <v-btn @click="calculateInvestmentsPayback">Calculate</v-btn>  
@@ -146,7 +146,7 @@ export default {
             profitPerMonthInTokens: null,
             profitPerMonthInDollars: null,
             profitPerMonthInDollarsHint: null,
-            economyMoneyPerMonth: 50000,
+            economyMoneyPerMonth: 100000,
             economyTokenPrice: null,
             economyAllBlockProducersStakes: 350000000,
             economyActiveBlockProducersVotes: 300000000,
@@ -233,7 +233,7 @@ export default {
                 .then(response => {
                     this.profitPerMonthInTokens = leaveNumbersAfterDotInFloat(response.data.result.tokens, 0)
                     this.profitPerMonthInDollars = leaveNumbersAfterDotInFloat(response.data.result.fiat, 2)
-                    this.profitPerMonthInDollarsHint = "Equals to the $" + this.profitPerMonthInDollars.toString() + "."
+                    this.profitPerMonthInDollarsHint = "~ $" + this.profitPerMonthInDollars.toString() + "."
                 })
                 .catch(error => {
                     this.profitPerMonthInTokens = `We're sorry, we're not able to retrieve this info.`
