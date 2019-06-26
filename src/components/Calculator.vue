@@ -33,6 +33,8 @@
                                     @input="$v.economyTokenPrice.$touch()"
                                     @blur="$v.economyTokenPrice.$touch()"
                                     placeholder="0.0071"
+                                    hint="By default, we get the token price from <a href='https://coinmarketcap.com/'>CoinMarketCap</a>"
+                                    persistent-hint
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs6>
@@ -44,6 +46,8 @@
                                     @input="$v.economyAllBlockProducersStakes.$touch()"
                                     @blur="$v.economyAllBlockProducersStakes.$touch()"
                                     placeholder="350000000"
+                                    hint="Сurrent stakes of all block producers"
+                                    persistent-hint
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs6>
@@ -54,6 +58,8 @@
                                     @input="$v.economyActiveBlockProducersVotes.$touch()"
                                     @blur="$v.economyActiveBlockProducersVotes.$touch()"
                                     placeholder="300000000"
+                                    hint="Сurrent votes of active block producers"
+                                    persistent-hint
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs12>
@@ -127,12 +133,12 @@ export default {
         return {
             caclulationResult: null,
             isGenericRequestError: false,
-            economyMoneyPerMonth: null,
+            economyMoneyPerMonth: 50000,
             economyTokenPrice: null,
-            economyAllBlockProducersStakes: null,
-            economyActiveBlockProducersVotes: null,
-            blockProducerStake: null,
-            blockProducerVotes: null,
+            economyAllBlockProducersStakes: 350000000,
+            economyActiveBlockProducersVotes: 300000000,
+            blockProducerStake: 300000,
+            blockProducerVotes: 300000,
             switchForTop21: false,
         }
     },
@@ -192,9 +198,12 @@ export default {
             if (this.switchForTop21 === false) {
                 // If user's block producer has zero votes, it does not matter how much
                 // votes other activate block producers (top 21) have, so any random integer
-                if (!this.economyActiveBlockProducersVotes) {this.economyActiveBlockProducersVotes = 1}
-                if (!this.blockProducerVotes) {this.blockProducerVotes = 0}
+                this.economyActiveBlockProducersVotes = 1
+                this.blockProducerVotes = 0
             }
+
+            console.log(this.economyActiveBlockProducersVotes)
+
 
             axios
                 .post('https://bpc-back-production.herokuapp.com/investments-payback/month', {
@@ -228,5 +237,10 @@ export default {
 <style>
 .container {
     padding-top: 0;
+}
+.v-input--selection-controls {
+    margin-top: 10px;
+    padding-top: 4px;
+    height: 35px;
 }
 </style>

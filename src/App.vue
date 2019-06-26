@@ -3,6 +3,7 @@
     <v-app>
       <div id="logotype">
         <img id="logo" alt="Remme logotype" src="./assets/logo.png">
+        <!-- <img id="logo" alt="Remme logotype" src="./assets/remme-logo-fullcolor.png"> -->
       </div>
       <v-content>
         <Calculator/>
@@ -34,10 +35,7 @@ export default {
 }
 
 #logotype {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  height: 190px;
   text-align: center;
-  color: #2c3e50;
 }
 </style>
