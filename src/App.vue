@@ -3,7 +3,6 @@
     <v-app>
       <div id="logotype">
         <img id="logo" alt="Remme logotype" src="./assets/logo.png">
-        <!-- <img id="logo" alt="Remme logotype" src="./assets/remme-logo-fullcolor.png"> -->
       </div>
       <v-content>
         <Calculator/>

@@ -22,6 +22,8 @@
                                     @input="$v.economyMoneyPerMonth.$touch()"
                                     @blur="$v.economyMoneyPerMonth.$touch()"
                                     placeholder="50000"
+                                    hint="Per month."
+                                    persistent-hint
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs6>
@@ -33,7 +35,7 @@
                                     @input="$v.economyTokenPrice.$touch()"
                                     @blur="$v.economyTokenPrice.$touch()"
                                     placeholder="0.0071"
-                                    hint="By default, we get the token price from <a href='https://coinmarketcap.com/'>CoinMarketCap</a>"
+                                    hint="By default, we get the token price from <a href='https://coinmarketcap.com/'>CoinMarketCap</a>."
                                     persistent-hint
                                 ></v-text-field>
                             </v-flex>
@@ -46,8 +48,6 @@
                                     @input="$v.economyAllBlockProducersStakes.$touch()"
                                     @blur="$v.economyAllBlockProducersStakes.$touch()"
                                     placeholder="350000000"
-                                    hint="Сurrent stakes of all block producers"
-                                    persistent-hint
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs6>
@@ -58,8 +58,6 @@
                                     @input="$v.economyActiveBlockProducersVotes.$touch()"
                                     @blur="$v.economyActiveBlockProducersVotes.$touch()"
                                     placeholder="300000000"
-                                    hint="Сurrent votes of active block producers"
-                                    persistent-hint
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs12>
@@ -94,10 +92,12 @@
                             </v-flex>
                             <v-flex xs6>
                                 <v-text-field
-                                    v-model="caclulationResult"
+                                    v-model="profitPerMonthInTokens"
                                     label="Expected payback in tokens per month"
                                     placeholder="0"
                                     readonly
+                                    :hint="profitPerMonthInDollarsHint"
+                                    persistent-hint
                                 ></v-text-field> 
                             </v-flex>
                         </v-layout>                                                               
@@ -118,6 +118,18 @@ import { constants } from 'crypto';
 
 Vue.use(Vuelidate)
 
+/**
+ * Leave the numbers after the dot in the float.
+ * 
+ * Reference: https://stackoverflow.com/questions/6525335/trim-to-2-decimals
+ *
+ * @param {object} number - number.
+ * @param {object} count - number of decimal places.
+ */
+function leaveNumbersAfterDotInFloat(number, count) {
+    return Math.floor(number * (100 ** (count / 2))) / (100 ** (count / 2));
+}
+
 export default {
     name: 'Calculator',
     mixins: [validationMixin],
@@ -131,7 +143,9 @@ export default {
     },
     data() {
         return {
-            caclulationResult: null,
+            profitPerMonthInTokens: null,
+            profitPerMonthInDollars: null,
+            profitPerMonthInDollarsHint: null,
             isGenericRequestError: false,
             economyMoneyPerMonth: 50000,
             economyTokenPrice: null,
@@ -189,7 +203,9 @@ export default {
     mounted() {
         axios
             .get('https://bpc-back-production.herokuapp.com/token/price/usd')
-            .then(response => (this.economyTokenPrice = response.data.price))
+            .then(response => {
+                this.economyTokenPrice = leaveNumbersAfterDotInFloat(response.data.result, 6)
+            })
     },
     methods: {
         calculateInvestmentsPayback: function () {
@@ -202,11 +218,8 @@ export default {
                 this.blockProducerVotes = 0
             }
 
-            console.log(this.economyActiveBlockProducersVotes)
-
-
             axios
-                .post('https://bpc-back-production.herokuapp.com/investments-payback/month', {
+                .post('https://bpc-back-production.herokuapp.com/profit/month', {
                     economy: {
                         money_per_month: this.economyMoneyPerMonth,
                         token_price: this.economyTokenPrice,
@@ -218,11 +231,13 @@ export default {
                         votes: this.blockProducerVotes
                     }
                 })
-                .then(
-                    response => (this.caclulationResult = response.data.payback)
-                )
+                .then(response => {
+                    this.profitPerMonthInTokens = leaveNumbersAfterDotInFloat(response.data.result.tokens, 0)
+                    this.profitPerMonthInDollars = leaveNumbersAfterDotInFloat(response.data.result.fiat, 2)
+                    this.profitPerMonthInDollarsHint = "Equals to the $" + this.profitPerMonthInDollars.toString() + "."
+                })
                 .catch(error => {
-                    this.caclulationResult = `We're sorry, we're not able to retrieve this info.`
+                    this.profitPerMonthInTokens = `We're sorry, we're not able to retrieve this info.`
                 })
 
             if (this.switchForTop21 === false) {
