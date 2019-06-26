@@ -146,7 +146,6 @@ export default {
             profitPerMonthInTokens: null,
             profitPerMonthInDollars: null,
             profitPerMonthInDollarsHint: null,
-            isGenericRequestError: false,
             economyMoneyPerMonth: 50000,
             economyTokenPrice: null,
             economyAllBlockProducersStakes: 350000000,
@@ -213,7 +212,7 @@ export default {
 
             if (this.switchForTop21 === false) {
                 // If user's block producer has zero votes, it does not matter how much
-                // votes other activate block producers (top 21) have, so any random integer
+                // votes other activate block producers (top 21) have, so any random integer.
                 this.economyActiveBlockProducersVotes = 1
                 this.blockProducerVotes = 0
             }
@@ -241,8 +240,9 @@ export default {
                 })
 
             if (this.switchForTop21 === false) {
-                this.economyActiveBlockProducersVotes = null
-                this.blockProducerVotes = null
+                // Fill up fields with default value after calculation.
+                this.economyActiveBlockProducersVotes = 300000000
+                this.blockProducerVotes = 300000
             }
         }
     }
