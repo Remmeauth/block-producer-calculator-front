@@ -1,0 +1,7 @@
+FROM node:8.15.0
+
+WORKDIR /block-producer-calculator-front
+COPY . /block-producer-calculator-front
+
+ENTRYPOINT rm -rf /block-producer-calculator-front/node_modules || true && \
+               npm install && npm run serve

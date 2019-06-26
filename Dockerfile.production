@@ -1,0 +1,15 @@
+FROM node:8.15.0 AS production-codebase
+
+WORKDIR /block-producer-calculator-front
+COPY . /block-producer-calculator-front
+
+RUN npm install && npm run build
+
+FROM nginx:1.15.8
+
+RUN mkdir -p /var/www/html
+
+COPY --from=production-codebase /block-producer-calculator-front/dist /var/www/html
+COPY --from=production-codebase /block-producer-calculator-front/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
+CMD /bin/bash -c "envsubst '\$PORT' < /etc/nginx/conf.d/default.conf > /etc/nginx/conf.d/default.conf" && nginx -g 'daemon off;'
