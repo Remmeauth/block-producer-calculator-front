@@ -51,6 +51,18 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs6>
+                                <v-text-field
+                                    v-model="economyTokenPriceGrowthPercent"
+                                    :error-messages="economyTokenPriceGrowthPercentErrors"
+                                    label="Token price growth percent per month"
+                                    @input="$v.economyTokenPriceGrowthPercent.$touch()"
+                                    @blur="$v.economyTokenPriceGrowthPercent.$touch()"
+                                    placeholder="3"
+                                    hint="Is used for returning on investement."
+                                    persistent-hint
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex xs6>
                                 <v-text-field v-if="switchForTop21"
                                     v-model="economyActiveBlockProducersVotes"
                                     :error-messages="economyActiveBlockProducersVotesErrors"
@@ -60,6 +72,7 @@
                                     placeholder="300000000"
                                 ></v-text-field>
                             </v-flex>
+                            <v-flex xs6></v-flex>
                             <v-flex xs12>
                                 <h2>Block Producer parameters</h2>
                             </v-flex>
@@ -84,25 +97,39 @@
                                     placeholder="300000"
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex xs12>
-                                <h2>Expected reward calculation</h2>
-                            </v-flex>
                             <v-flex xs6>
                                 <v-btn @click="calculateInvestmentsPayback">Calculate</v-btn>  
                             </v-flex>
-                            <v-flex xs6>
-                                <v-text-field
-                                    v-model="profitPerMonthInTokens"
-                                    label="Expected payback in tokens per month"
-                                    placeholder="0"
-                                    readonly
-                                    :hint="profitPerMonthInDollarsHint"
-                                    persistent-hint
-                                ></v-text-field> 
+                            <v-flex xs12 v-if="isRoiCalculated">
+                                <h2>Expected reward calculation</h2>
                             </v-flex>
                         </v-layout>                                                               
                     </form>
                 </v-container>
+            </v-flex>
+            <v-flex offset-xs1 xs10 v-if="isErrorDuringCalculation">
+                <h2 align="center" id="calculationErrorMessage"> {{ calculationErrorMessage }}</h2>
+            </v-flex>
+            <v-flex offset-xs1 xs10 v-if="isRoiCalculated">
+                <h3>Return on investment in tokens: {{ roiPercentInTokens }}%</h3>
+                <h3>Return on investment in dollars: {{ roiPercentInDollars }}%</h3>
+                <br>
+            </v-flex>
+            <v-flex offset-xs1 xs10 v-if="isRoiCalculated">
+                <v-data-table
+                    :headers="roiStatisticsTableHeaders"
+                    :items="roiStatistics"
+                    class="elevation-1"
+                    hide-actions
+                ><template v-slot:items="props">
+                    <td class="text-xs-center">{{ props.item.month }}</td>
+                    <td class="text-xs-center">{{ props.item.block_producer_stake_in_tokens | leaveNumbersAfterDotInFloatFilter(0) }}</td>
+                    <td class="text-xs-center">{{ props.item.month_reward_in_tokens | leaveNumbersAfterDotInFloatFilter(0) }}</td>
+                    <td class="text-xs-center">{{ props.item.block_producer_stake_in_fiat | leaveNumbersAfterDotInFloatFilter(0) }}</td>
+                    <td class="text-xs-center">{{ props.item.month_reward_in_fiat | leaveNumbersAfterDotInFloatFilter(2) }}</td>
+                    <td class="text-xs-center">{{ props.item.token_price | leaveNumbersAfterDotInFloatFilter(6) }}</td>
+                    </template>
+                </v-data-table>
             </v-flex>
         </v-layout>
     </v-container>
@@ -117,6 +144,9 @@ import { required, integer, decimal } from 'vuelidate/lib/validators'
 import { constants } from 'crypto';
 
 Vue.use(Vuelidate)
+
+const productionHostUrl = 'https://bpc-back-production.herokuapp.com'
+const yearInMonthsToCalculateRoi = 12
 
 /**
  * Leave the numbers after the dot in the float.
@@ -136,6 +166,7 @@ export default {
     validations: {
         economyMoneyPerMonth: { required, integer },
         economyTokenPrice: { required, decimal },
+        economyTokenPriceGrowthPercent: { required, integer },
         economyAllBlockProducersStakes: { required, integer },
         economyActiveBlockProducersVotes: { required, integer },
         blockProducerStake: { required, integer },
@@ -143,31 +174,50 @@ export default {
     },
     data() {
         return {
-            profitPerMonthInTokens: null,
-            profitPerMonthInDollars: null,
-            profitPerMonthInDollarsHint: null,
+            isErrorDuringCalculation: false,
+            calculationErrorMessage: null,
             economyMoneyPerMonth: 100000,
             economyTokenPrice: null,
+            economyTokenPriceGrowthPercent: 3,
             economyAllBlockProducersStakes: 350000000,
             economyActiveBlockProducersVotes: 300000000,
             blockProducerStake: 300000,
             blockProducerVotes: 300000,
             switchForTop21: false,
+            isRoiCalculated: false,
+            roiPercentInTokens: null,
+            roiPercentInDollars: null,
+            roiStatistics: [],
+            roiStatisticsTableHeaders: [
+                { text: 'Month', value: 'month', sortable: false },
+                { text: 'Block producer stake in tokens', value: 'stake-in-tokens', sortable: false },
+                { text: 'Reward in tokens', value: 'reward-token', sortable: false },
+                { text: 'Block producer stake in dollars', value: 'stake-in-dollars', sortable: false },
+                { text: 'Reward in dollars', value: 'reward-dollars', sortable: false },
+                { text: 'Token price', value: 'token-price', sortable: false },
+            ],
         }
     },
     computed: {
         economyMoneyPerMonthErrors () {
-          const errors = []
-          if (!this.$v.economyMoneyPerMonth.$dirty) return errors
-          !this.$v.economyMoneyPerMonth.required && errors.push('This field is required.')
-          !this.$v.economyMoneyPerMonth.integer && errors.push('This field should be an integer.')
-          return errors
+            const errors = []
+            if (!this.$v.economyMoneyPerMonth.$dirty) return errors
+            !this.$v.economyMoneyPerMonth.required && errors.push('This field is required.')
+            !this.$v.economyMoneyPerMonth.integer && errors.push('This field should be an integer.')
+            return errors
         },
         economyTokenPriceErrors () {
             const errors = []
             if (!this.$v.economyTokenPrice.$dirty) return errors
             !this.$v.economyTokenPrice.required && errors.push('This field is required.')
             !this.$v.economyTokenPrice.decimal && errors.push('This field should be a decimal.')
+            return errors
+        },
+        economyTokenPriceGrowthPercentErrors () {
+            const errors = []
+            if (!this.$v.economyTokenPriceGrowthPercent.$dirty) return errors
+            !this.$v.economyTokenPriceGrowthPercent.required && errors.push('This field is required.')
+            !this.$v.economyTokenPriceGrowthPercent.integer && errors.push('This field should be an integer.')
             return errors
         },
         economyAllBlockProducersStakesErrors () {
@@ -199,9 +249,14 @@ export default {
             return errors
         },                 
     },
+    filters: {
+        leaveNumbersAfterDotInFloatFilter: function (value, NumbersAfterDot) {
+            return leaveNumbersAfterDotInFloat(value, NumbersAfterDot)
+        }
+    },
     mounted() {
         axios
-            .get('https://bpc-back-production.herokuapp.com/token/price/usd')
+            .get(productionHostUrl + '/token/price/usd')
             .then(response => {
                 this.economyTokenPrice = leaveNumbersAfterDotInFloat(response.data.result, 6)
             })
@@ -218,10 +273,12 @@ export default {
             }
 
             axios
-                .post('https://bpc-back-production.herokuapp.com/profit/month', {
+                .post(productionHostUrl + '/profit/roi', {
+                    months: yearInMonthsToCalculateRoi,
                     economy: {
                         money_per_month: this.economyMoneyPerMonth,
                         token_price: this.economyTokenPrice,
+                        token_price_growth_percent: this.economyTokenPriceGrowthPercent,
                         all_block_producers_stakes: this.economyAllBlockProducersStakes,
                         active_block_producers_votes: this.economyActiveBlockProducersVotes
                     },
@@ -231,12 +288,14 @@ export default {
                     }
                 })
                 .then(response => {
-                    this.profitPerMonthInTokens = leaveNumbersAfterDotInFloat(response.data.result.tokens, 0)
-                    this.profitPerMonthInDollars = leaveNumbersAfterDotInFloat(response.data.result.fiat, 2)
-                    this.profitPerMonthInDollarsHint = "~ $" + this.profitPerMonthInDollars.toString() + "."
+                    this.isRoiCalculated = true
+                    this.roiPercentInTokens = leaveNumbersAfterDotInFloat(response.data.result.percents.tokens, 2)
+                    this.roiPercentInDollars = leaveNumbersAfterDotInFloat(response.data.result.percents.fiat, 2)
+                    this.roiStatistics = response.data.result.statistics_per_month
                 })
                 .catch(error => {
-                    this.profitPerMonthInTokens = `We're sorry, we're not able to retrieve this info.`
+                    this.isErrorDuringCalculation = true
+                    this.calculationErrorMessage = `We are sorry, something went wrong.`
                 })
 
             if (this.switchForTop21 === false) {
@@ -253,9 +312,14 @@ export default {
 .container {
     padding-top: 0;
 }
+
 .v-input--selection-controls {
     margin-top: 10px;
     padding-top: 4px;
     height: 35px;
+}
+
+#calculationErrorMessage {
+    color: red;
 }
 </style>
