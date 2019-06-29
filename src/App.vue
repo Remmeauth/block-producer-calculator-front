@@ -2,7 +2,9 @@
   <div id="app">
     <v-app>
       <div id="logotype">
-        <img id="logo" alt="Remme logotype" src="./assets/logo.png">
+        <v-layout align-center justify-center row fill-height>
+          <img id="logo" alt="Remme logotype" src="./assets/logo.png">
+        </v-layout> 
       </div>
       <v-content>
         <Calculator/>
@@ -29,12 +31,12 @@ export default {
 }
 
 #logo {
-  width: 200px;
-  height: 200px;
+  max-width: 35%;
+  margin-top: 10px;
 }
 
 #logotype {
-  height: 190px;
   text-align: center;
+  margin-bottom: 15px;
 }
 </style>
