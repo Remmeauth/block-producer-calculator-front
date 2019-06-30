@@ -108,7 +108,6 @@
                             </v-flex>
                             <v-flex xs12>
                                 <v-btn class="white--text" @click="calculateInvestmentsPayback" color="#5D80DB"><b>Calculate</b></v-btn>
-                                <v-btn class="white--text" @click="calculateInvestmentsPayback" color="#533971">Calculate</v-btn>
                             </v-flex>
                             <v-flex xs12 v-if="isRoiCalculated">
                                 <h3>Expected reward calculation</h3>
