@@ -4,29 +4,32 @@
             <v-flex xs8 offset-xs2>
                 <v-container grid-list-xl text-xs-center>
                     <form>
-                        <v-switch 
-                            v-model="switchForTop21" 
-                            :label="`I plan to run for the top 21`"
-                            color="#533971"
-                        ></v-switch>
                         <v-layout row wrap justify-center>
-                            <v-flex xs12>
-                                <h2>Blockchain parameters</h2>
+                            <v-flex xs12 sm10 md12 lg12 xl12>
+                                <v-switch 
+                                    v-model="switchForTop21" 
+                                    :label="`I plan to run for the top 21`"
+                                    color="#533971"
+                                ></v-switch>
                             </v-flex>
-                            <v-flex xs6>
+                            <v-flex xs12>
+                                <h3>Blockchain parameters</h3>
+                            </v-flex>
+                            <v-flex xs12 sm10 md6 lg6 xl6>
                                 <v-text-field
                                     v-model="economyMoneyPerMonth"
+                                    type="text"
                                     :error-messages="economyMoneyPerMonthErrors"
                                     label="How much dollars comes into the REMChain economy"
                                     required
                                     @input="$v.economyMoneyPerMonth.$touch()"
                                     @blur="$v.economyMoneyPerMonth.$touch()"
-                                    placeholder="50000"
+                                    placeholder="100,000"
                                     hint="Per month."
                                     persistent-hint
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex xs6>
+                            <v-flex xs12 sm10 md6 lg6 xl6>
                                 <v-text-field
                                     v-model="economyTokenPrice"
                                     :error-messages="economyTokenPriceErrors"
@@ -39,20 +42,23 @@
                                     persistent-hint
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex xs6>
+                            <v-flex xs12 sm10 md6 lg6 xl6>
                                 <v-text-field
                                     v-model="economyAllBlockProducersStakes"
+                                    type="text"
                                     :error-messages="economyAllBlockProducersStakesErrors"
                                     label="Amount of REM staked by other block producers"
                                     required
                                     @input="$v.economyAllBlockProducersStakes.$touch()"
                                     @blur="$v.economyAllBlockProducersStakes.$touch()"
-                                    placeholder="350000000"
+                                    placeholder="350,000,000"
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex xs6>
+                            <v-flex xs12 sm10 md6 lg6 xl6>
                                 <v-text-field
                                     v-model="economyTokenPriceGrowthPercent"
+                                    type="number"
+                                    min="0"
                                     :error-messages="economyTokenPriceGrowthPercentErrors"
                                     label="Token price growth percent per month"
                                     @input="$v.economyTokenPriceGrowthPercent.$touch()"
@@ -62,46 +68,49 @@
                                     persistent-hint
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex xs6>
+                            <v-flex xs12 sm10 md6 lg6 xl6>
                                 <v-text-field v-if="switchForTop21"
                                     v-model="economyActiveBlockProducersVotes"
+                                    type="text"
                                     :error-messages="economyActiveBlockProducersVotesErrors"
                                     label="Amount of votes other active block producers (TOP 21) have"
                                     @input="$v.economyActiveBlockProducersVotes.$touch()"
                                     @blur="$v.economyActiveBlockProducersVotes.$touch()"
-                                    placeholder="300000000"
+                                    placeholder="300,000,000"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs6></v-flex>
                             <v-flex xs12>
-                                <h2>Block Producer parameters</h2>
+                                <h3>Block Producer parameters</h3>
                             </v-flex>
-                            <v-flex xs6>
+                            <v-flex xs12 sm10 md6 lg6 xl6>
                                 <v-text-field
                                     v-model="blockProducerStake"
+                                    type="text"
                                     :error-messages="blockProducerStakeErrors"
                                     label="Stake number"
                                     required
                                     @input="$v.blockProducerStake.$touch()"
                                     @blur="$v.blockProducerStake.$touch()"
-                                    placeholder="300000"
+                                    placeholder="300,000"
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex xs6>
+                            <v-flex xs12 sm10 md6 lg6 xl6>
                                 <v-text-field v-if="switchForTop21"
                                     v-model="blockProducerVotes"
+                                    type="text"
                                     :error-messages="blockProducerVotesErrors"
                                     label="Votes number"
                                     @input="$v.blockProducerVotes.$touch()"
                                     @blur="$v.blockProducerVotes.$touch()"
-                                    placeholder="300000"
+                                    placeholder="300,000"
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex xs6>
-                                <v-btn @click="calculateInvestmentsPayback">Calculate</v-btn>  
+                            <v-flex xs12>
+                                <v-btn class="white--text" @click="calculateInvestmentsPayback" color="#5D80DB"><b>Calculate</b></v-btn>
                             </v-flex>
                             <v-flex xs12 v-if="isRoiCalculated">
-                                <h2>Expected reward calculation</h2>
+                                <h3>Expected reward calculation</h3>
                             </v-flex>
                         </v-layout>                                                               
                     </form>
@@ -111,8 +120,8 @@
                 <h2 align="center" id="calculationErrorMessage"> {{ calculationErrorMessage }}</h2>
             </v-flex>
             <v-flex offset-xs1 xs10 v-if="isRoiCalculated">
-                <h3>Return on investment in tokens: {{ roiPercentInTokens }}%</h3>
-                <h3>Return on investment in dollars: {{ roiPercentInDollars }}%</h3>
+                <h4>Return on investment in tokens: {{ roiPercentInTokens }}%</h4>
+                <h4>Return on investment in dollars: {{ roiPercentInDollars }}%</h4>
                 <br>
             </v-flex>
             <v-flex offset-xs1 xs10 v-if="isRoiCalculated">
@@ -142,8 +151,11 @@ import Vue from 'vue'
 import { validationMixin, Vuelidate } from 'vuelidate'
 import { required, integer, decimal } from 'vuelidate/lib/validators'
 import { constants } from 'crypto';
+import { type } from 'os';
 
 Vue.use(Vuelidate)
+
+var numeral = require('numeral');
 
 const productionHostUrl = 'https://bpc-back-production.herokuapp.com'
 const yearInMonthsToCalculateRoi = 12
@@ -158,6 +170,33 @@ const yearInMonthsToCalculateRoi = 12
  */
 function leaveNumbersAfterDotInFloat(number, count) {
     return Math.floor(number * (100 ** (count / 2))) / (100 ** (count / 2));
+}
+
+/**
+ * Remove commas in the string to convert to a number.
+ *
+ * @param {object} string - string to convert to a number.
+ */
+function removeCommasInStringToConvertToNumber(string) {
+    return Number(string.toString().replace(/,/g, ''));
+}
+
+/**
+ * Separate the number with commas.
+ *
+ * @param {object} number - number to separate.
+ */
+function separateNumberWithCommas(number) {
+    return number.toString().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+/**
+ * Convert the number to a string with commas.
+ *
+ * @param {object} number - number to convert to string.
+ */
+function convertNumberToStringWithCommas(number) {
+    return numeral(number).format("0,0");
 }
 
 export default {
@@ -176,13 +215,13 @@ export default {
         return {
             isErrorDuringCalculation: false,
             calculationErrorMessage: null,
-            economyMoneyPerMonth: 100000,
+            economyMoneyPerMonth: convertNumberToStringWithCommas(100000),
             economyTokenPrice: null,
             economyTokenPriceGrowthPercent: 3,
-            economyAllBlockProducersStakes: 350000000,
-            economyActiveBlockProducersVotes: 300000000,
-            blockProducerStake: 300000,
-            blockProducerVotes: 300000,
+            economyAllBlockProducersStakes: convertNumberToStringWithCommas(350000000),
+            economyActiveBlockProducersVotes: convertNumberToStringWithCommas(300000000),
+            blockProducerStake: convertNumberToStringWithCommas(300000),
+            blockProducerVotes: convertNumberToStringWithCommas(300000),
             switchForTop21: false,
             isRoiCalculated: false,
             roiPercentInTokens: null,
@@ -203,55 +242,67 @@ export default {
             const errors = []
             if (!this.$v.economyMoneyPerMonth.$dirty) return errors
             !this.$v.economyMoneyPerMonth.required && errors.push('This field is required.')
-            !this.$v.economyMoneyPerMonth.integer && errors.push('This field should be an integer.')
             return errors
+            
         },
         economyTokenPriceErrors () {
             const errors = []
             if (!this.$v.economyTokenPrice.$dirty) return errors
             !this.$v.economyTokenPrice.required && errors.push('This field is required.')
-            !this.$v.economyTokenPrice.decimal && errors.push('This field should be a decimal.')
+            !this.$v.economyTokenPrice.decimal && errors.push('This field should be a decimal or integer.')
             return errors
         },
         economyTokenPriceGrowthPercentErrors () {
             const errors = []
             if (!this.$v.economyTokenPriceGrowthPercent.$dirty) return errors
             !this.$v.economyTokenPriceGrowthPercent.required && errors.push('This field is required.')
-            !this.$v.economyTokenPriceGrowthPercent.integer && errors.push('This field should be an integer.')
             return errors
         },
         economyAllBlockProducersStakesErrors () {
             const errors = []
             if (!this.$v.economyAllBlockProducersStakes.$dirty) return errors
             !this.$v.economyAllBlockProducersStakes.required && errors.push('This field is required.')
-            !this.$v.economyAllBlockProducersStakes.integer && errors.push('This field should be an integer.')
             return errors
         },   
         economyActiveBlockProducersVotesErrors () {
             const errors = []
             if (!this.$v.economyActiveBlockProducersVotes.$dirty) return errors
             !this.$v.economyActiveBlockProducersVotes.required && errors.push('This field is required.')
-            !this.$v.economyActiveBlockProducersVotes.integer && errors.push('This field should be an integer.')
             return errors
           },
         blockProducerStakeErrors () {
             const errors = []
             if (!this.$v.blockProducerStake.$dirty) return errors
             !this.$v.blockProducerStake.required && errors.push('This field is required.')
-            !this.$v.blockProducerStake.integer && errors.push('This field should be an integer.')
             return errors
         },
         blockProducerVotesErrors () {
             const errors = []
             if (!this.$v.blockProducerVotes.$dirty) return errors
             !this.$v.blockProducerVotes.required && errors.push('This field is required.')
-            !this.$v.blockProducerVotes.integer && errors.push('This field should be an integer.')
             return errors
-        },                 
+        }               
     },
     filters: {
         leaveNumbersAfterDotInFloatFilter: function (value, NumbersAfterDot) {
             return leaveNumbersAfterDotInFloat(value, NumbersAfterDot)
+        }
+    },
+    watch: {
+        economyMoneyPerMonth(newv) {
+            Vue.nextTick(() => this.economyMoneyPerMonth = separateNumberWithCommas(newv));
+        },
+        economyAllBlockProducersStakes(newv) {
+            Vue.nextTick(() => this.economyAllBlockProducersStakes = separateNumberWithCommas(newv));
+        },
+        economyActiveBlockProducersVotes(newv) {
+            Vue.nextTick(() => this.economyActiveBlockProducersVotes = separateNumberWithCommas(newv));
+        },
+        blockProducerStake(newv) {
+            Vue.nextTick(() => this.blockProducerStake = separateNumberWithCommas(newv));
+        },
+        blockProducerVotes(newv) {
+            Vue.nextTick(() => this.blockProducerVotes = separateNumberWithCommas(newv));
         }
     },
     mounted() {
@@ -276,15 +327,15 @@ export default {
                 .post(productionHostUrl + '/profit/roi', {
                     months: yearInMonthsToCalculateRoi,
                     economy: {
-                        money_per_month: this.economyMoneyPerMonth,
+                        money_per_month: removeCommasInStringToConvertToNumber(this.economyMoneyPerMonth),
                         token_price: this.economyTokenPrice,
                         token_price_growth_percent: this.economyTokenPriceGrowthPercent,
-                        all_block_producers_stakes: this.economyAllBlockProducersStakes,
-                        active_block_producers_votes: this.economyActiveBlockProducersVotes
+                        all_block_producers_stakes: removeCommasInStringToConvertToNumber(this.economyAllBlockProducersStakes),
+                        active_block_producers_votes: removeCommasInStringToConvertToNumber(this.economyActiveBlockProducersVotes)
                     },
                     block_producer: {
-                        stake: this.blockProducerStake,
-                        votes: this.blockProducerVotes
+                        stake: removeCommasInStringToConvertToNumber(this.blockProducerStake),
+                        votes: removeCommasInStringToConvertToNumber(this.blockProducerVotes)
                     }
                 })
                 .then(response => {
