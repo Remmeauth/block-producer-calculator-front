@@ -190,6 +190,15 @@ function separateNumberWithCommas(number) {
     return number.toString().replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
+/**
+ * Convert the number to a string with commas.
+ *
+ * @param {object} number - number to convert to string.
+ */
+function convertNumberToStringWithCommas(number) {
+    return numeral(number).format("0,0");
+}
+
 export default {
     name: 'Calculator',
     mixins: [validationMixin],
@@ -206,13 +215,13 @@ export default {
         return {
             isErrorDuringCalculation: false,
             calculationErrorMessage: null,
-            economyMoneyPerMonth: numeral(100000).format("0,0"),
+            economyMoneyPerMonth: convertNumberToStringWithCommas(100000),
             economyTokenPrice: null,
             economyTokenPriceGrowthPercent: 3,
-            economyAllBlockProducersStakes: numeral(350000000).format("0,0"),
-            economyActiveBlockProducersVotes: numeral(300000000).format("0,0"),
-            blockProducerStake: numeral(300000).format("0,0"),
-            blockProducerVotes: numeral(300000).format("0,0"),
+            economyAllBlockProducersStakes: convertNumberToStringWithCommas(350000000),
+            economyActiveBlockProducersVotes: convertNumberToStringWithCommas(300000000),
+            blockProducerStake: convertNumberToStringWithCommas(300000),
+            blockProducerVotes: convertNumberToStringWithCommas(300000),
             switchForTop21: false,
             isRoiCalculated: false,
             roiPercentInTokens: null,
