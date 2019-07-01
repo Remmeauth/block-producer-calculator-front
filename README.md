@@ -1,4 +1,4 @@
-![Entire screen of the calculator](https://habrastorage.org/webt/tq/xi/5d/tqxi5d4qbhjp5ywr_f_losyjtta.png)
+<img src="https://habrastorage.org/webt/1a/zj/jn/1azjjnqchrxjogbocjpiatoe6cw.png" width="520" height="440">
 
 Block producer investments payback calculator front-end.
 
