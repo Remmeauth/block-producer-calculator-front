@@ -213,6 +213,7 @@ export default {
     },
     data() {
         return {
+            isDisclaimerViewedByUser: localStorage.isDisclaimerViewedByUser,
             isErrorDuringCalculation: false,
             calculationErrorMessage: null,
             economyMoneyPerMonth: convertNumberToStringWithCommas(100000),
@@ -313,6 +314,9 @@ export default {
             })
     },
     methods: {
+        userAcceptDislaimer: function () {
+            localStorage.isDisclaimerViewedByUser = true
+        },
         calculateInvestmentsPayback: function () {
             this.$v.$touch()
 
