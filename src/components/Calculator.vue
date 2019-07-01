@@ -1,7 +1,7 @@
 <template>
     <v-container>
         <v-layout row wrap>
-            <v-flex xs8 offset-xs2>
+            <v-flex xs12 sm12 md12 lg10 xl8 offset-lg1 offset-xl2>
                 <v-container grid-list-xl text-xs-center>
                     <form>
                         <v-layout row wrap justify-center>
