@@ -4,8 +4,8 @@
             <v-flex xs12 sm12 md12 lg10 xl8 offset-lg1 offset-xl2>
                 <v-container grid-list-xl text-xs-center>
                     <form>
-                        <v-layout row wrap justify-center>
-                            <v-flex xs12 sm10 md12 lg12 xl12>
+                        <v-layout row wrap justify-center v-if="isDisclaimerViewedByUser">
+                            <v-flex xs12 sm10 md12 lg12 xl12 style="padding-bottom:0px;">
                                 <v-switch 
                                     v-model="switchForTop21" 
                                     :label="`I plan to run for the top 21`"
@@ -106,39 +106,60 @@
                                     placeholder="300,000"
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex xs12>
-                                <v-btn class="white--text" @click="calculateInvestmentsPayback" color="#5D80DB"><b>Calculate</b></v-btn>
+                            <v-flex xs12 style="padding-top:0px; padding-bottom:0px;">
+                                <v-btn class="white--text" @click="calculateInvestmentsPayback" color="#5D80DB">
+                                    <b>Calculate</b>
+                                </v-btn>
+                                <br>
+                                <v-btn flat class="showDisclaimer" @click="showDisclaimer">
+                                    <b>Disclaimer</b>
+                                </v-btn>
                             </v-flex>
                             <v-flex xs12 v-if="isRoiCalculated">
                                 <h3>Expected reward calculation</h3>
                             </v-flex>
-                        </v-layout>                                                               
+                            <v-flex xs12 sm12 md12 lg12 xl12 v-if="isErrorDuringCalculation" style="padding-top:0px;">
+                                <h2 align="center" id="calculationErrorMessage"> {{ calculationErrorMessage }}</h2>
+                            </v-flex>
+                            <v-flex xs12 sm12 md12 lg12 xl12 v-if="isRoiCalculated">
+                                <h4>Return on investment in tokens: {{ roiPercentInTokens }}%</h4>
+                                <h4>Return on investment in dollars: {{ roiPercentInDollars }}%</h4>
+                                <br>
+                            </v-flex>
+                            <v-flex xs12 sm12 md12 lg12 xl12 v-if="isRoiCalculated">
+                                <v-data-table
+                                    :headers="roiStatisticsTableHeaders"
+                                    :items="roiStatistics"
+                                    class="elevation-1"
+                                    hide-actions
+                                ><template v-slot:items="props">
+                                    <td class="text-xs-center">{{ props.item.month }}</td>
+                                    <td class="text-xs-center">{{ props.item.block_producer_stake_in_tokens | leaveNumbersAfterDotInFloatFilter(0) }}</td>
+                                    <td class="text-xs-center">{{ props.item.month_reward_in_tokens | leaveNumbersAfterDotInFloatFilter(0) }}</td>
+                                    <td class="text-xs-center">{{ props.item.block_producer_stake_in_fiat | leaveNumbersAfterDotInFloatFilter(0) }}</td>
+                                    <td class="text-xs-center">{{ props.item.month_reward_in_fiat | leaveNumbersAfterDotInFloatFilter(2) }}</td>
+                                    <td class="text-xs-center">{{ props.item.token_price | leaveNumbersAfterDotInFloatFilter(6) }}</td>
+                                    </template>
+                                </v-data-table>
+                            </v-flex>
+                        </v-layout>
+                        <v-layout row wrap justify-center align-center v-else>
+                            <v-flex xs12 sm10 md12 lg12 xl12>
+                            </v-flex>
+                            <v-flex xs12 sm10 md12 lg12 xl12>
+                                <v-card-title primary-title class="layout justify-center">
+                                    <h2>Disclaimer</h2>
+                                </v-card-title>
+                                <v-card-text class="font-weight-medium" style="text-align: justify; font-size: 1.1em;">
+                                    {{ card_text }}
+                                </v-card-text>
+                            </v-flex>
+                            <v-flex xs12>
+                                <v-btn class="white--text" @click="userAcceptDislaimer" color="#5D80DB"><b>Close</b></v-btn>
+                            </v-flex>
+                        </v-layout>                                                            
                     </form>
                 </v-container>
-            </v-flex>
-            <v-flex offset-xs1 xs10 v-if="isErrorDuringCalculation">
-                <h2 align="center" id="calculationErrorMessage"> {{ calculationErrorMessage }}</h2>
-            </v-flex>
-            <v-flex offset-xs1 xs10 v-if="isRoiCalculated">
-                <h4>Return on investment in tokens: {{ roiPercentInTokens }}%</h4>
-                <h4>Return on investment in dollars: {{ roiPercentInDollars }}%</h4>
-                <br>
-            </v-flex>
-            <v-flex offset-xs1 xs10 v-if="isRoiCalculated">
-                <v-data-table
-                    :headers="roiStatisticsTableHeaders"
-                    :items="roiStatistics"
-                    class="elevation-1"
-                    hide-actions
-                ><template v-slot:items="props">
-                    <td class="text-xs-center">{{ props.item.month }}</td>
-                    <td class="text-xs-center">{{ props.item.block_producer_stake_in_tokens | leaveNumbersAfterDotInFloatFilter(0) }}</td>
-                    <td class="text-xs-center">{{ props.item.month_reward_in_tokens | leaveNumbersAfterDotInFloatFilter(0) }}</td>
-                    <td class="text-xs-center">{{ props.item.block_producer_stake_in_fiat | leaveNumbersAfterDotInFloatFilter(0) }}</td>
-                    <td class="text-xs-center">{{ props.item.month_reward_in_fiat | leaveNumbersAfterDotInFloatFilter(2) }}</td>
-                    <td class="text-xs-center">{{ props.item.token_price | leaveNumbersAfterDotInFloatFilter(6) }}</td>
-                    </template>
-                </v-data-table>
             </v-flex>
         </v-layout>
     </v-container>
@@ -147,11 +168,17 @@
 <script>
 import axios from 'axios'
 import Vue from 'vue'
+import reactiveStorage from "vue-reactive-storage"
 
 import { validationMixin, Vuelidate } from 'vuelidate'
 import { required, integer, decimal } from 'vuelidate/lib/validators'
 import { constants } from 'crypto';
 import { type } from 'os';
+
+
+Vue.use(reactiveStorage, {
+    "isDisclaimerViewedByUser": false,
+});
 
 Vue.use(Vuelidate)
 
@@ -236,6 +263,7 @@ export default {
                 { text: 'Reward in dollars', value: 'reward-dollars', sortable: false },
                 { text: 'Token price', value: 'token-price', sortable: false },
             ],
+            card_text: 'The Remme Masternode Calculator is designed for information purpose only. The information on this webpage is provided solely on the basis that you will make your own investment decisions. All results produced by the calculator are from the assumptions made by the Remme team, their experience, researchand assumptions. We do not guarantee or make promises as to any results that may be obtained from using this calculator. Before making any investment decision you should seek professional advice or independently research and verify any information received from this calculator whether for the purpose of becoming a masternode holder or otherwise. You will be able to practically check your own conclusions and assumptions while running a masternode in the testnet. By using this calculator you agree that the calculations made by it are not treated as financial advice. Although, care has been taken in preparing information being a background for calculations, we cannot be held responsible for any errors or omissions, and we accept no liability whatsoever for any loss or damage you may incur.'
         }
     },
     computed: {
@@ -315,7 +343,10 @@ export default {
     },
     methods: {
         userAcceptDislaimer: function () {
-            localStorage.isDisclaimerViewedByUser = true
+            this.isDisclaimerViewedByUser = this.localStorage.isDisclaimerViewedByUser = true
+        },
+        showDisclaimer: function () {
+            this.isDisclaimerViewedByUser = this.localStorage.isDisclaimerViewedByUser = false
         },
         calculateInvestmentsPayback: function () {
             this.$v.$touch()
@@ -372,6 +403,15 @@ export default {
     margin-top: 10px;
     padding-top: 4px;
     height: 35px;
+}
+
+.v-btn.showDisclaimer {
+    text-decoration: underline; 
+    text-transform: capitalize;
+}
+
+.showDisclaimer:hover:before {
+    background-color: transparent;
 }
 
 #calculationErrorMessage {
