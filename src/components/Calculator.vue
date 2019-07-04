@@ -150,8 +150,21 @@
                                 <v-card-title primary-title class="layout justify-center">
                                     <h2>Disclaimer</h2>
                                 </v-card-title>
-                                <v-card-text class="font-weight-medium" style="text-align: justify; font-size: 1.1em;">
-                                    {{ card_text }}
+                                <v-card-text style="text-align: justify; font-size: 1.1em; text-indent: 40px;">
+                                    <h4 style="font-weight: 500;">The Remme Block Producer Calculator is designed for information purpose only. 
+                                        The information on this webpage is provided solely on the basis that you will make your own investment decisions. </h4>
+                                        <br>
+                                    <h4 style="font-weight: 500;">All results produced by the calculator are from the assumptions made by the Remme team, 
+                                        their experience, research and assumptions. We do not guarantee or make promises as to any results that may be 
+                                        obtained from using this calculator. Before making any investment decision you should seek professional advice or 
+                                        independently research and verify any information received from this calculator whether for the purpose of becoming
+                                        a block producer holder or otherwise. You will be able to practically check your own conclusions and assumptions while
+                                        running a block producer in the testnet.</h4>
+                                        <br>
+                                    <h4 style="font-weight: 500;">By using this calculator you agree that the calculations made by it are not treated as 
+                                        financial advice. Although care has been taken in preparing information being a background for calculations, 
+                                        we cannot be held responsible for any errors or omissions, and we accept no liability whatsoever for any loss or 
+                                        damage you may incur.</h4>
                                 </v-card-text>
                             </v-flex>
                             <v-flex xs12>
@@ -263,7 +276,6 @@ export default {
                 { text: 'Reward in dollars', value: 'reward-dollars', sortable: false },
                 { text: 'Token price', value: 'token-price', sortable: false },
             ],
-            card_text: 'The Remme Masternode Calculator is designed for information purpose only. The information on this webpage is provided solely on the basis that you will make your own investment decisions. All results produced by the calculator are from the assumptions made by the Remme team, their experience, researchand assumptions. We do not guarantee or make promises as to any results that may be obtained from using this calculator. Before making any investment decision you should seek professional advice or independently research and verify any information received from this calculator whether for the purpose of becoming a masternode holder or otherwise. You will be able to practically check your own conclusions and assumptions while running a masternode in the testnet. By using this calculator you agree that the calculations made by it are not treated as financial advice. Although, care has been taken in preparing information being a background for calculations, we cannot be held responsible for any errors or omissions, and we accept no liability whatsoever for any loss or damage you may incur.'
         }
     },
     computed: {
