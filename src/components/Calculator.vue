@@ -80,7 +80,7 @@
                             <v-flex xs12 sm10 md12 lg12 xl12 style="padding-bottom:0px;">
                                 <v-switch
                                     v-model="switchForTop21"
-                                    :label="`I plan to run a block producer node for the top 25`"
+                                    :label="`I plan to run for Top25 block producer`"
                                     color="#533971"
                                 ></v-switch>
                             </v-flex>
@@ -93,7 +93,7 @@
                                     v-model="blockProducerVotes"
                                     type="text"
                                     :error-messages="blockProducerVotesErrors"
-                                    label="Votes number"
+                                    label="Votes number you expect to receive"
                                     @input="$v.blockProducerVotes.$touch()"
                                     @blur="$v.blockProducerVotes.$touch()"
                                     placeholder="300,000"
@@ -104,7 +104,7 @@
                                     v-model="economyActiveBlockProducersVotes"
                                     type="text"
                                     :error-messages="economyActiveBlockProducersVotesErrors"
-                                    label="Amount of votes other active block producers (TOP 25) have"
+                                    label="Votes number others in the Top25 are expected to receive (except you)"
                                     @input="$v.economyActiveBlockProducersVotes.$touch()"
                                     @blur="$v.economyActiveBlockProducersVotes.$touch()"
                                     placeholder="300,000,000"
