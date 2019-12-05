@@ -5,13 +5,6 @@
                 <v-container grid-list-xl text-xs-center>
                     <form>
                         <v-layout row wrap justify-center v-if="isDisclaimerViewedByUser">
-                            <v-flex xs12 sm10 md12 lg12 xl12 style="padding-bottom:0px;">
-                                <v-switch
-                                    v-model="switchForTop21"
-                                    :label="`I plan to run for the top 21`"
-                                    color="#533971"
-                                ></v-switch>
-                            </v-flex>
                             <v-flex xs12>
                                 <h3>Blockchain parameters</h3>
                             </v-flex>
@@ -44,18 +37,6 @@
                             </v-flex>
                             <v-flex xs12 sm10 md6 lg6 xl6>
                                 <v-text-field
-                                    v-model="economyAllBlockProducersStakes"
-                                    type="text"
-                                    :error-messages="economyAllBlockProducersStakesErrors"
-                                    label="Amount of REM staked by other block producers"
-                                    required
-                                    @input="$v.economyAllBlockProducersStakes.$touch()"
-                                    @blur="$v.economyAllBlockProducersStakes.$touch()"
-                                    placeholder="350,000,000"
-                                ></v-text-field>
-                            </v-flex>
-                            <v-flex xs12 sm10 md6 lg6 xl6>
-                                <v-text-field
                                     v-model="economyTokenPriceGrowthPercent"
                                     type="number"
                                     min="0"
@@ -66,17 +47,6 @@
                                     placeholder="3"
                                     hint="Is used for returning on investement."
                                     persistent-hint
-                                ></v-text-field>
-                            </v-flex>
-                            <v-flex xs12 sm10 md6 lg6 xl6>
-                                <v-text-field v-if="switchForTop21"
-                                    v-model="economyActiveBlockProducersVotes"
-                                    type="text"
-                                    :error-messages="economyActiveBlockProducersVotesErrors"
-                                    label="Amount of votes other active block producers (TOP 21) have"
-                                    @input="$v.economyActiveBlockProducersVotes.$touch()"
-                                    @blur="$v.economyActiveBlockProducersVotes.$touch()"
-                                    placeholder="300,000,000"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs6></v-flex>
@@ -96,6 +66,29 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs12 sm10 md6 lg6 xl6>
+                                <v-text-field
+                                    v-model="economyAllBlockProducersStakes"
+                                    type="text"
+                                    :error-messages="economyAllBlockProducersStakesErrors"
+                                    label="Amount of REM staked by other guardians"
+                                    required
+                                    @input="$v.economyAllBlockProducersStakes.$touch()"
+                                    @blur="$v.economyAllBlockProducersStakes.$touch()"
+                                    placeholder="350,000,000"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex xs12 sm10 md12 lg12 xl12 style="padding-bottom:0px;">
+                                <v-switch
+                                    v-model="switchForTop21"
+                                    :label="`I plan to run a block producer node for the top 25`"
+                                    color="#533971"
+                                ></v-switch>
+                            </v-flex>
+                            <v-flex xs12
+                            v-text-field v-if="switchForTop21">
+                                <h3>Active block producer parameters</h3>
+                            </v-flex>
+                            <v-flex xs12 sm10 md6 lg6 xl6>
                                 <v-text-field v-if="switchForTop21"
                                     v-model="blockProducerVotes"
                                     type="text"
@@ -104,6 +97,17 @@
                                     @input="$v.blockProducerVotes.$touch()"
                                     @blur="$v.blockProducerVotes.$touch()"
                                     placeholder="300,000"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex xs12 sm10 md6 lg6 xl6>
+                                <v-text-field v-if="switchForTop21"
+                                    v-model="economyActiveBlockProducersVotes"
+                                    type="text"
+                                    :error-messages="economyActiveBlockProducersVotesErrors"
+                                    label="Amount of votes other active block producers (TOP 25) have"
+                                    @input="$v.economyActiveBlockProducersVotes.$touch()"
+                                    @blur="$v.economyActiveBlockProducersVotes.$touch()"
+                                    placeholder="300,000,000"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs12 style="padding-top:0px; padding-bottom:0px;">
