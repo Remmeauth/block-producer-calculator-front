@@ -5,13 +5,6 @@
                 <v-container grid-list-xl text-xs-center>
                     <form>
                         <v-layout row wrap justify-center v-if="isDisclaimerViewedByUser">
-                            <v-flex xs12 sm10 md12 lg12 xl12 style="padding-bottom:0px;">
-                                <v-switch 
-                                    v-model="switchForTop21" 
-                                    :label="`I plan to run for the top 21`"
-                                    color="#533971"
-                                ></v-switch>
-                            </v-flex>
                             <v-flex xs12>
                                 <h3>Blockchain parameters</h3>
                             </v-flex>
@@ -44,18 +37,6 @@
                             </v-flex>
                             <v-flex xs12 sm10 md6 lg6 xl6>
                                 <v-text-field
-                                    v-model="economyAllBlockProducersStakes"
-                                    type="text"
-                                    :error-messages="economyAllBlockProducersStakesErrors"
-                                    label="Amount of REM staked by other block producers"
-                                    required
-                                    @input="$v.economyAllBlockProducersStakes.$touch()"
-                                    @blur="$v.economyAllBlockProducersStakes.$touch()"
-                                    placeholder="350,000,000"
-                                ></v-text-field>
-                            </v-flex>
-                            <v-flex xs12 sm10 md6 lg6 xl6>
-                                <v-text-field
                                     v-model="economyTokenPriceGrowthPercent"
                                     type="number"
                                     min="0"
@@ -68,20 +49,9 @@
                                     persistent-hint
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex xs12 sm10 md6 lg6 xl6>
-                                <v-text-field v-if="switchForTop21"
-                                    v-model="economyActiveBlockProducersVotes"
-                                    type="text"
-                                    :error-messages="economyActiveBlockProducersVotesErrors"
-                                    label="Amount of votes other active block producers (TOP 21) have"
-                                    @input="$v.economyActiveBlockProducersVotes.$touch()"
-                                    @blur="$v.economyActiveBlockProducersVotes.$touch()"
-                                    placeholder="300,000,000"
-                                ></v-text-field>
-                            </v-flex>
                             <v-flex xs6></v-flex>
                             <v-flex xs12>
-                                <h3>Block Producer parameters</h3>
+                                <h3>Guardian parameters</h3>
                             </v-flex>
                             <v-flex xs12 sm10 md6 lg6 xl6>
                                 <v-text-field
@@ -96,6 +66,29 @@
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs12 sm10 md6 lg6 xl6>
+                                <v-text-field
+                                    v-model="economyAllBlockProducersStakes"
+                                    type="text"
+                                    :error-messages="economyAllBlockProducersStakesErrors"
+                                    label="Amount of REM staked by other guardians"
+                                    required
+                                    @input="$v.economyAllBlockProducersStakes.$touch()"
+                                    @blur="$v.economyAllBlockProducersStakes.$touch()"
+                                    placeholder="350,000,000"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex xs12 sm10 md12 lg12 xl12 style="padding-bottom:0px;">
+                                <v-switch
+                                    v-model="switchForTop21"
+                                    :label="`I plan to run a block producer node for the top 25`"
+                                    color="#533971"
+                                ></v-switch>
+                            </v-flex>
+                            <v-flex xs12
+                            v-text-field v-if="switchForTop21">
+                                <h3>Active block producer parameters</h3>
+                            </v-flex>
+                            <v-flex xs12 sm10 md6 lg6 xl6>
                                 <v-text-field v-if="switchForTop21"
                                     v-model="blockProducerVotes"
                                     type="text"
@@ -104,6 +97,17 @@
                                     @input="$v.blockProducerVotes.$touch()"
                                     @blur="$v.blockProducerVotes.$touch()"
                                     placeholder="300,000"
+                                ></v-text-field>
+                            </v-flex>
+                            <v-flex xs12 sm10 md6 lg6 xl6>
+                                <v-text-field v-if="switchForTop21"
+                                    v-model="economyActiveBlockProducersVotes"
+                                    type="text"
+                                    :error-messages="economyActiveBlockProducersVotesErrors"
+                                    label="Amount of votes other active block producers (TOP 25) have"
+                                    @input="$v.economyActiveBlockProducersVotes.$touch()"
+                                    @blur="$v.economyActiveBlockProducersVotes.$touch()"
+                                    placeholder="300,000,000"
                                 ></v-text-field>
                             </v-flex>
                             <v-flex xs12 style="padding-top:0px; padding-bottom:0px;">
@@ -150,14 +154,27 @@
                                 <v-card-title primary-title class="layout justify-center">
                                     <h2>Disclaimer</h2>
                                 </v-card-title>
-                                <v-card-text class="font-weight-medium" style="text-align: justify; font-size: 1.1em;">
-                                    {{ card_text }}
+                                <v-card-text style="text-align: justify; font-size: 1.1em; text-indent: 40px;">
+                                    <h4 style="font-weight: 500;">The Remme Block Producer Calculator is designed for information purpose only.
+                                        The information on this webpage is provided solely on the basis that you will make your own investment decisions. </h4>
+                                        <br>
+                                    <h4 style="font-weight: 500;">All results produced by the calculator are from the assumptions made by the Remme team,
+                                        their experience, research and assumptions. We do not guarantee or make promises as to any results that may be
+                                        obtained from using this calculator. Before making any investment decision you should seek professional advice or
+                                        independently research and verify any information received from this calculator whether for the purpose of becoming
+                                        a block producer holder or otherwise. You will be able to practically check your own conclusions and assumptions while
+                                        running a block producer in the testnet.</h4>
+                                        <br>
+                                    <h4 style="font-weight: 500;">By using this calculator you agree that the calculations made by it are not treated as
+                                        financial advice. Although care has been taken in preparing information being a background for calculations,
+                                        we cannot be held responsible for any errors or omissions, and we accept no liability whatsoever for any loss or
+                                        damage you may incur.</h4>
                                 </v-card-text>
                             </v-flex>
                             <v-flex xs12>
                                 <v-btn class="white--text" @click="userAcceptDislaimer" color="#5D80DB"><b>Close</b></v-btn>
                             </v-flex>
-                        </v-layout>                                                            
+                        </v-layout>
                     </form>
                 </v-container>
             </v-flex>
@@ -189,7 +206,7 @@ const yearInMonthsToCalculateRoi = 12
 
 /**
  * Leave the numbers after the dot in the float.
- * 
+ *
  * Reference: https://stackoverflow.com/questions/6525335/trim-to-2-decimals
  *
  * @param {object} number - number.
@@ -257,13 +274,12 @@ export default {
             roiStatistics: [],
             roiStatisticsTableHeaders: [
                 { text: 'Month', value: 'month', sortable: false },
-                { text: 'Block producer stake in tokens', value: 'stake-in-tokens', sortable: false },
+                { text: 'Stake in tokens', value: 'stake-in-tokens', sortable: false },
                 { text: 'Reward in tokens', value: 'reward-token', sortable: false },
-                { text: 'Block producer stake in dollars', value: 'stake-in-dollars', sortable: false },
+                { text: 'Stake in dollars', value: 'stake-in-dollars', sortable: false },
                 { text: 'Reward in dollars', value: 'reward-dollars', sortable: false },
                 { text: 'Token price', value: 'token-price', sortable: false },
             ],
-            card_text: 'The Remme Masternode Calculator is designed for information purpose only. The information on this webpage is provided solely on the basis that you will make your own investment decisions. All results produced by the calculator are from the assumptions made by the Remme team, their experience, researchand assumptions. We do not guarantee or make promises as to any results that may be obtained from using this calculator. Before making any investment decision you should seek professional advice or independently research and verify any information received from this calculator whether for the purpose of becoming a masternode holder or otherwise. You will be able to practically check your own conclusions and assumptions while running a masternode in the testnet. By using this calculator you agree that the calculations made by it are not treated as financial advice. Although, care has been taken in preparing information being a background for calculations, we cannot be held responsible for any errors or omissions, and we accept no liability whatsoever for any loss or damage you may incur.'
         }
     },
     computed: {
@@ -272,7 +288,7 @@ export default {
             if (!this.$v.economyMoneyPerMonth.$dirty) return errors
             !this.$v.economyMoneyPerMonth.required && errors.push('This field is required.')
             return errors
-            
+
         },
         economyTokenPriceErrors () {
             const errors = []
@@ -292,7 +308,7 @@ export default {
             if (!this.$v.economyAllBlockProducersStakes.$dirty) return errors
             !this.$v.economyAllBlockProducersStakes.required && errors.push('This field is required.')
             return errors
-        },   
+        },
         economyActiveBlockProducersVotesErrors () {
             const errors = []
             if (!this.$v.economyActiveBlockProducersVotes.$dirty) return errors
@@ -310,7 +326,7 @@ export default {
             if (!this.$v.blockProducerVotes.$dirty) return errors
             !this.$v.blockProducerVotes.required && errors.push('This field is required.')
             return errors
-        }               
+        }
     },
     filters: {
         leaveNumbersAfterDotInFloatFilter: function (value, NumbersAfterDot) {
@@ -406,7 +422,7 @@ export default {
 }
 
 .v-btn.showDisclaimer {
-    text-decoration: underline; 
+    text-decoration: underline;
     text-transform: capitalize;
 }
 
