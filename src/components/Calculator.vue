@@ -139,7 +139,14 @@
                                 ><template v-slot:items="props">
                                     <td class="text-xs-center">{{ props.item.month }}</td>
                                     <td class="text-xs-center">{{ props.item.block_producer_stake_in_tokens | leaveNumbersAfterDotInFloatFilter(0) }}</td>
-                                    <td class="text-xs-center">{{ props.item.month_reward_in_tokens | leaveNumbersAfterDotInFloatFilter(0) }}</td>
+                                    <td class="text-xs-center">
+                                      <sup>
+                                        {{props.item.month_reward_from_node | leaveNumbersAfterDotInFloatFilter(0)}} /
+                                        {{props.item.month_reward_from_pool | leaveNumbersAfterDotInFloatFilter(0)}} /
+                                      </sup>
+                                      <br>
+                                      {{(props.item.month_reward_from_node+props.item.month_reward_from_pool) | leaveNumbersAfterDotInFloatFilter(0)}}
+                                    </td>
                                     <td class="text-xs-center">{{ props.item.block_producer_stake_in_fiat | leaveNumbersAfterDotInFloatFilter(0) }}</td>
                                     <td class="text-xs-center">{{ props.item.month_reward_in_fiat | leaveNumbersAfterDotInFloatFilter(2) }}</td>
                                     <td class="text-xs-center">{{ props.item.token_price | leaveNumbersAfterDotInFloatFilter(6) }}</td>
@@ -275,7 +282,7 @@ export default {
             roiStatisticsTableHeaders: [
                 { text: 'Month', value: 'month', sortable: false },
                 { text: 'Stake in tokens', value: 'stake-in-tokens', sortable: false },
-                { text: 'Reward in tokens', value: 'reward-token', sortable: false },
+                { text: 'Reward in tokens(regular/incentive fund/total)', value: 'reward-token', sortable: false },
                 { text: 'Stake in dollars', value: 'stake-in-dollars', sortable: false },
                 { text: 'Reward in dollars', value: 'reward-dollars', sortable: false },
                 { text: 'Token price', value: 'token-price', sortable: false },
